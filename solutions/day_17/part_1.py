@@ -2,6 +2,7 @@ from typing import List
 from collections import namedtuple
 from utils.grid import Grid, Point
 from heapq import heappush, heappop
+from math import inf
 
 
 Path = namedtuple("Path", ("heat_lost", "distance_from_end", "num_steps_in_current_direction", "visited"))
@@ -58,14 +59,10 @@ def specialized_dijkstra(start_point: Point, end_point: Point, grid: Grid):
                 get_difference(new_path.visited[-2], new_path.visited[-1]),
                 new_path.num_steps_in_current_direction
             )
-            if cached_state_key in cached_states:
-                min_heat_loss = cached_states.get(cached_state_key)
-                if min_heat_loss > new_path.heat_lost:
-                    heappush(heap, new_path)
-                    cached_states[cached_state_key] = new_path.heat_lost
-            else:
-                cached_states[cached_state_key] = new_path.heat_lost
+            min_heat_loss = cached_states.get(cached_state_key, inf)
+            if min_heat_loss > new_path.heat_lost:
                 heappush(heap, new_path)
+                cached_states[cached_state_key] = new_path.heat_lost
     return -1
 
 
