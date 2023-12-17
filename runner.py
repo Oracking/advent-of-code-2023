@@ -7,9 +7,9 @@ from sample_results.results import SAMPLE_RESULTS
 
 def run(year: int, day: int, part: int):
     day_input = load_input(year, day)
-    solver = import_from(f"solutions.day_{day}.part_{part}", f"part_{part}")
+    solver = dynamically_import_name_from_module(f"part_{part}", f"solutions.day_{day}.part_{part}")
     sample_input = read_file(f"solutions/day_{day}/sample_{part}.txt")
-    run_part(solver, sample_input, SAMPLE_RESULTS[f"day_{day}"][part-1], day_input)
+    run_solver_against_input(solver, sample_input, SAMPLE_RESULTS[f"day_{day}"][part - 1], day_input)
 
 
 def load_input(year: int, day: int) -> List[str]:
@@ -22,7 +22,7 @@ def load_input(year: int, day: int) -> List[str]:
     return [line.decode("utf-8").strip("\n") for line in urlopen(req).readlines()]
 
 
-def import_from(module, name):
+def dynamically_import_name_from_module(name: str, module: str):
     module = __import__(module, fromlist=[name])
     return getattr(module, name)
 
@@ -32,7 +32,7 @@ def read_file(input_file_path: str) -> List[str]:
         return [line.strip("\n") for line in input_file.readlines()]
 
 
-def run_part(solver, sample_input: List[str], sample_answer: int, input_content: List[str]):
+def run_solver_against_input(solver, sample_input: List[str], sample_answer: int, input_content: List[str]):
     print("=" * 100)
     print("Running sample...")
     sample_output = solver(sample_input)
@@ -46,4 +46,4 @@ def run_part(solver, sample_input: List[str], sample_answer: int, input_content:
 
 
 if __name__ == "__main__":
-    run(year=2023, day=16, part=2)
+    run(year=2023, day=17, part=2)
