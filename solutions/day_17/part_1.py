@@ -27,14 +27,12 @@ def specialized_dijkstra(start_point: Point, end_point: Point, grid: Grid):
             (start_point,)
         )
     ]
-    previous_pivots = {start_point}
     while len(heap) > 0:
         current_path = heappop(heap)
         if current_path.visited[-1] == end_point:
             return current_path.heat_lost
 
         current_pivot_point = current_path.visited[-1]
-        previous_pivots.add(current_pivot_point)
         current_direction = Point(0.5, 0.5)
         if len(current_path.visited) > 1:
             current_direction = get_difference(current_path.visited[-2], current_path.visited[-1])
