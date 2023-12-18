@@ -46,4 +46,4 @@ def run_solver_against_input(solver, sample_input: List[str], sample_answer: int
 
 
 if __name__ == "__main__":
-    run(year=2023, day=17, part=2)
+    run(year=2023, day=18, part=1)

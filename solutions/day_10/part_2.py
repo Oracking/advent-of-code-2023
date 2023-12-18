@@ -1,6 +1,8 @@
 from typing import List, Set
 from utils.grid import Grid, Point
-from solutions.day_10.pipe_utils import Pipe, PIPE_STR_TO_Y_WEIGHT, PIPE_STR_TO_VALID_NEIGHBOUR_DIFF
+from solutions.day_10.pipe_utils import (
+    Pipe, PIPE_STR_TO_Y_WEIGHT, NEIGHBOUR_DIFFS_TO_PIPE_STR
+)
 
 
 def part_2(lines: List[str]):
@@ -18,7 +20,10 @@ def part_2(lines: List[str]):
     pipe_grid: Grid[Pipe] = Grid(grid_content)
     connect_pipes_together(pipe_grid)
     loop_body_coordinates = find_loop_body_coordinates(starting_pipe_coordinate, pipe_grid)
+    return calculate_bounded_area(pipe_grid, loop_body_coordinates)
 
+
+def calculate_bounded_area(pipe_grid: Grid, loop_body_coordinates: Set[Point]) -> int:
     num_points_in_loop = 0
     for row_index, row in enumerate(pipe_grid.get_rows_iter()):
         in_loop = 0
@@ -45,9 +50,9 @@ def connect_pipes_together(pipe_grid: Grid[Pipe]):
         current_point = pipe_grid.get_next_point_per_reading_flow(current_point)
 
 
-def find_loop_body_coordinates(starting_pipe_coordinate: Point, pipe_grid: Grid[Pipe]) -> Set[Pipe]:
+def find_loop_body_coordinates(starting_pipe_coordinate: Point, pipe_grid: Grid[Pipe]) -> Set[Point]:
     starting_pipe = pipe_grid.get_value(starting_pipe_coordinate)
-    loop_body_coordinates = set()
+    loop_body_coordinates: Set[Point] = set()
     pipes_that_connect_to_starting_pipe = []
     for starting_connected_pipe in starting_pipe.connected_pipes:
         previous_pipe = starting_pipe
@@ -62,7 +67,10 @@ def find_loop_body_coordinates(starting_pipe_coordinate: Point, pipe_grid: Grid[
             previous_pipe = current_pipe
             current_pipe = next_current_pipe
 
-    starting_pipe_type = find_pipe_type_from_connected_pipes(starting_pipe.point, pipes_that_connect_to_starting_pipe)
+    starting_pipe_type = find_pipe_type_from_connected_pipes(
+        starting_pipe.point,
+        [pipe.point for pipe in pipes_that_connect_to_starting_pipe]
+    )
     pipe_grid.set_value(
         starting_pipe.point,
         Pipe(starting_pipe_type, starting_pipe.point, [], True, False)
@@ -70,14 +78,12 @@ def find_loop_body_coordinates(starting_pipe_coordinate: Point, pipe_grid: Grid[
     return loop_body_coordinates
 
 
-def find_pipe_type_from_connected_pipes(pipe_coordinates: Point, connected_pipes: List[Pipe]) -> str:
-    connected_points_signature: Set[Point] = set()
-    for connected_pipe in connected_pipes:
-        connected_points_signature.add(Point(
-            connected_pipe.point.x - pipe_coordinates.x,
-            connected_pipe.point.y - pipe_coordinates.y
+def find_pipe_type_from_connected_pipes(pipe_coordinates: Point, connected_points: List[Point]) -> str:
+    connected_diffs: List[Point] = []
+    for connected_point in connected_points:
+        connected_diffs.append(Point(
+            connected_point.x - pipe_coordinates.x,
+            connected_point.y - pipe_coordinates.y
         ))
-    for pipe_type, connected_points_diff in PIPE_STR_TO_VALID_NEIGHBOUR_DIFF.items():
-        possible_connected_points_signature = set(connected_points_diff)
-        if connected_points_signature == possible_connected_points_signature:
-            return pipe_type
+    connected_diff_signatures = tuple(sorted(connected_diffs))
+    return NEIGHBOUR_DIFFS_TO_PIPE_STR[connected_diff_signatures]

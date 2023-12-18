@@ -73,8 +73,8 @@ class Grid(Generic[T]):
 
     def __str__(self):
         representation = "[\n"
-        for row in self.get_rows_iter():
-            representation += f"{str(row)}\n"
+        for y_index, row in enumerate(self.get_rows_iter()):
+            representation += f"{y_index:04} {''.join([repr(item) for item in row])}\n"
         representation += "]\n"
         return representation
 

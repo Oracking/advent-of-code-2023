@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from utils.grid import Point
 
 PIPE_STR_TO_Y_WEIGHT: Dict[str, int] = {
@@ -13,16 +13,19 @@ PIPE_STR_TO_Y_WEIGHT: Dict[str, int] = {
 }
 
 
-PIPE_STR_TO_VALID_NEIGHBOUR_DIFF: Dict[str, List[Point]] = {
-    "|": [Point(0, -1), Point(0, 1)],
-    "-": [Point(-1, 0), Point(1, 0)],
-    "L": [Point(0, -1), Point(1, 0)],
-    "J": [Point(0, -1), Point(-1, 0)],
-    "7": [Point(0, 1), Point(-1, 0)],
-    "F": [Point(0, 1), Point(1, 0)],
-    "S": [Point(0, 1), Point(0, -1), Point(-1, 0), Point(1, 0)],
-    ".": []
+PIPE_STR_TO_VALID_NEIGHBOUR_DIFF: Dict[str, Tuple[Point, ...]] = {
+    "|": (Point(0, -1), Point(0, 1)),
+    "-": (Point(-1, 0), Point(1, 0)),
+    "L": (Point(0, -1), Point(1, 0)),
+    "J": (Point(0, -1), Point(-1, 0)),
+    "7": (Point(0, 1), Point(-1, 0)),
+    "F": (Point(0, 1), Point(1, 0)),
+    "S": (Point(0, 1), Point(0, -1), Point(-1, 0), Point(1, 0)),
+    ".": tuple([])
 }
+
+
+NEIGHBOUR_DIFFS_TO_PIPE_STR = {tuple(sorted(value)): key for key, value in PIPE_STR_TO_VALID_NEIGHBOUR_DIFF.items()}
 
 
 class Pipe:
@@ -66,7 +69,7 @@ class Pipe:
                 pipe_2.add_connected_pipe(pipe_1)
 
     def __repr__(self):
-        return str(self)
+        return str(self.content)
 
     def __str__(self):
         return f"Pipe(content={self.content}, point={self.point}, connected_points={self.connected_points})"
