@@ -1,6 +1,7 @@
 from math import gcd
 import re
 from typing import List
+from utils.custom_math import lcm
 
 direction_to_index = {
     "L": 0,
@@ -22,7 +23,7 @@ def part_2(lines: List[str]):
         z_point_loops.append(find_z_points_loop(source_node_to_destination_nodes, direction_stream, node))
 
     # The code below is an optimization.
-    # And I can perform the below optimization because I've had a look at the data and noticed that
+    # WB: And I can perform the below optimization because I've had a look at the data and noticed that
     # each loop contains exactly one point that ends in Z. And the distance from the start to that z-point
     # is the same as the distance from the z-point, to the end and back to itself. Effectively, the z-point
     # loops are looking like this:
@@ -69,8 +70,4 @@ def convert_traversed_nodes_to_z_points(traversed_nodes_list, loop_back_index):
     return z_points
 
 
-def lcm(*integers):
-    a = integers[0]
-    for b in integers[1:]:
-        a = (a * b) // gcd(a, b)
-    return a
+
